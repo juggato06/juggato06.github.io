@@ -86,31 +86,46 @@ nav a:hover::after {
     width: 100%;
 }
 
+/* --- Socials (Text Links) --- */
 .socials {
     display: flex;
-    gap: 0.5rem;
-    flex-basis: 15%; /* Keeps socials to the right */
+    gap: 1.5rem; /* Increased space between text links */
+    flex-basis: auto; /* Allow content to dictate width */
     justify-content: flex-end;
 }
 
-.socials img {
-    width: 24px;
-    height: 24px;
-    padding: 4px;
-    transition: transform 0.3s;
+.socials a {
+    color: var(--text-color); /* Inherit main text color */
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    position: relative;
+    padding-bottom: 3px; /* Space for the hover underline */
 }
 
-.socials img:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 8px var(--primary-color);
-    border-radius: 50%;
+/* Use the same underline hover effect as the main navigation */
+.socials a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.socials a:hover {
+    color: var(--primary-color);
+}
+
+.socials a:hover::after {
+    width: 100%;
 }
 
 /* --- Main Content Sections --- */
 section {
     padding: 4rem 5%;
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 /* --- 2. Hero Section --- */
@@ -122,15 +137,48 @@ section {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    
+    /* Crucial: Relative position for the background overlay */
+    position: relative; 
+    overflow: hidden; /* Ensures background doesn't create scrollbars */
 }
 
-.hero-text-content h1 { font-size: 3.5rem; }
-.hero-text-content h2 { margin-top: 1rem; margin-bottom: 2rem; }
-.intro-bio {
+/* New Rule: Use a pseudo-element to hold the full-width background */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Stretches to full width of the section */
+    height: 100%;
+    
+    /* --- BACKGROUND IMAGE STYLES --- */
+    background-image: 
+        /* 1. Dark Overlay */
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+        /* 2. Your Image */
+        url('images/cyberpunk-background.png'); /* Use your correct file name here */
+
+    background-size: cover;          
+    background-position: center;     
+    background-attachment: fixed;
+    z-index: 1; /* Place below the content */
+}
+
+/* Ensure the text content is above the background and properly centered */
+.hero-text-content {
+    position: relative; /* Must be relative to sit above z-index: 1 background */
+    z-index: 2; /* Ensures text is visible */
+    
+    /* Use max-width and margin auto for centering block */
     max-width: 700px;
+    margin: 0 auto; /* This centers the text block */
+    
+    /* Re-enforce text styles */
     font-size: 1.1rem;
     color: #b0b0b0;
     line-height: 1.7;
+    text-align: center; /* Ensure text lines are centered within the block */
 }
 
 /* --- 3. Projects Section --- */

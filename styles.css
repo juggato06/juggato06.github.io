@@ -192,7 +192,7 @@ section {
     display: flex;
     align-items: center;
     gap: 1rem;
-    max-width: 1200px; 
+    max-width: 1500px; 
     margin: 0 auto;
 
 }
@@ -222,7 +222,7 @@ section {
 
 .project-box {
     /* Set a fixed size for the project box (making it bigger) */
-    width: 350px; /* Wider box */
+    width: 400px; /* Wider box */
     height: auto;
     flex-shrink: 0; /* Prevents boxes from shrinking */
     
@@ -243,7 +243,7 @@ section {
 
 .project-box img {
     width: 100%;
-    height: 220px; /* Taller image */
+    height: 240px; /* Taller image */
     object-fit: cover;
     display: block;
 }

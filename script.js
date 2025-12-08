@@ -6,70 +6,76 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (!viewport || !track) return;
 
-    let scrollAmount = 0;
-    const scrollStep = 350 + 32; // Project Box Width (350px) + Gap (2rem = 32px)
-    const autoScrollDelay = 4000; // Time in ms before auto-scrolling
+    // We no longer need the cloning logic for this simplified loop. 
+    // You can remove the cloned elements from your index.html if you want, 
+    // but the script will ignore them.
+    
+    const projectBoxes = Array.from(track.querySelectorAll('.project-box'));
+    const gap = 32;       // 2rem gap = 32px (Based on your CSS)
+    const cardWidth = 380; // Project Box Width (380px)
+    const scrollStep = cardWidth + gap; 
+    const autoScrollDelay = 4000; 
+
+    let intervalId = null;
 
     // --- Core Scrolling Function ---
-    const updateScroll = () => {
-        // Use smooth scrolling behavior for a nicer look
+    const updateScroll = (amount, behavior = 'smooth') => {
         viewport.scroll({
-            left: scrollAmount,
-            behavior: 'smooth'
+            left: amount,
+            behavior: behavior
         });
     };
     
-    // --- Autoscroll Functionality ---
+    // --- Autoscroll Logic: Scroll forward, then snap back to start ---
     const autoScroll = () => {
-        // Check if we are near the end of the track
-        if (viewport.scrollLeft + viewport.clientWidth >= track.scrollWidth) {
-            // Scroll back to the beginning seamlessly
-            scrollAmount = 0;
+        const currentScroll = viewport.scrollLeft;
+        const maxScroll = track.scrollWidth - viewport.clientWidth;
+        
+        // Check if we are near or at the end of the scrollable content
+        if (currentScroll >= maxScroll - 5) { // -5 safety margin
+            
+            // 1. Instantly snap back to the beginning (Position 0)
+            updateScroll(0, 'instant');
+            
+            // 2. Restart the smooth scroll from the beginning
+            updateScroll(scrollStep);
+
         } else {
-            // Move forward by one project card
-            scrollAmount += scrollStep;
+            // Smoothly scroll forward by one project card length
+            updateScroll(currentScroll + scrollStep);
         }
-        updateScroll();
     };
 
-    // Start auto-scrolling
-    let intervalId = setInterval(autoScroll, autoScrollDelay);
-
-    // --- Pause Autoscroll on Hover ---
-    const stopAutoScroll = () => {
-        clearInterval(intervalId);
-        intervalId = null;
-    };
-    
+    // --- Autoplay Controls ---
     const startAutoScroll = () => {
         if (!intervalId) {
             intervalId = setInterval(autoScroll, autoScrollDelay);
         }
     };
     
-    viewport.addEventListener('mouseenter', stopAutoScroll);
-    viewport.addEventListener('mouseleave', startAutoScroll);
+    const stopAutoScroll = () => {
+        clearInterval(intervalId);
+        intervalId = null;
+    };
 
-    // --- Manual Button Functionality ---
-    prevBtn.addEventListener('click', () => {
-        scrollAmount = Math.max(0, viewport.scrollLeft - scrollStep);
-        updateScroll();
-        stopAutoScroll(); // Stop auto-scroll after manual interaction
-        startAutoScroll();
-    });
-
+    // --- Manual Button Controls (Simple scroll) ---
+    
     nextBtn.addEventListener('click', () => {
-        scrollAmount = viewport.scrollLeft + scrollStep;
-        // Limit scroll to the end of the content
-        const maxScroll = track.scrollWidth - viewport.clientWidth;
-        if (scrollAmount > maxScroll) {
-            scrollAmount = 0; // Loop back to start
-        }
-        updateScroll();
-        stopAutoScroll(); // Stop auto-scroll after manual interaction
+        stopAutoScroll(); 
+        viewport.scrollBy({ left: scrollStep, behavior: 'smooth' });
         startAutoScroll();
     });
     
-    // Ensure scrollAmount is correctly set on initialization
-    scrollAmount = viewport.scrollLeft;
+    prevBtn.addEventListener('click', () => {
+        stopAutoScroll(); 
+        viewport.scrollBy({ left: -scrollStep, behavior: 'smooth' });
+        startAutoScroll();
+    });
+    
+    // Pause on interaction
+    viewport.addEventListener('mouseenter', stopAutoScroll);
+    viewport.addEventListener('mouseleave', startAutoScroll);
+
+    // Initial start
+    startAutoScroll();
 });
